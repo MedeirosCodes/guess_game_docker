@@ -1,173 +1,220 @@
-Jogo de Adivinhação com Flask Rodando em DOCKER
+# Jogo de Adivinhação com Flask, React e PostgreSQL em Docker
 
-primeiro crie as imagens na sua maquina com o comando 
+Este projeto demonstra uma aplicação web completa, incluindo um backend Flask (Python), um banco de dados PostgreSQL e um frontend React, orquestrados usando Docker Compose e servidos por Nginx.
 
-docker build -t postgres_db -f guess_game_docker/db/Dockerfile .
+## Visão Geral
 
-Nessa etapa está criando a imagem do banco de dados Postgress usando a versão alpine 17
+O projeto é composto por três serviços principais:
 
-Agora vamos criar a imagem do game
+* **Backend (Flask)**: Uma aplicação Python Flask que contém a lógica do jogo de adivinhação e interage com o banco de dados PostgreSQL.
 
-docker build -t game -f guess_game_docker/game/Dockerfile .
+* **Banco de Dados (PostgreSQL)**: Um servidor de banco de dados PostgreSQL para armazenar os dados do jogo, como pontuações e informações de jogadores.
 
-Agora vamos criar a imagem do front-end
+* **Frontend (React + Nginx)**: Uma aplicação React que fornece a interface do usuário do jogo. O Nginx atua como um proxy reverso para o backend Flask e serve os arquivos estáticos do frontend.
 
-docker build -t nginx -f guess_game_docker/front/Dockerfile .
+## Pré-requisitos
 
+Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
+* **Docker Desktop** (ou Docker Engine e Docker Compose)
 
----
+  * [Instalação do Docker](https://docs.docker.com/get-docker/)
 
-# Jogo de Adivinhação com Flask
+  * [Instalação do Docker Compose](https://docs.docker.com/compose/install/) (geralmente já vem com o Docker Desktop)
 
-Este é um simples jogo de adivinhação desenvolvido utilizando o framework Flask. O jogador deve adivinhar uma senha criada aleatoriamente, e o sistema fornecerá feedback sobre o número de letras corretas e suas respectivas posições.
+## Estrutura do Projeto
 
-## Funcionalidades
-
-- Criação de um novo jogo com uma senha fornecida pelo usuário.
-- Adivinhe a senha e receba feedback se as letras estão corretas e/ou em posições corretas.
-- As senhas são armazenadas  utilizando base64.
-- As adivinhações incorretas retornam uma mensagem com dicas.
-  
-## Requisitos
-
-- Python 3.8+
-- Flask
-- Um banco de dados local (ou um mecanismo de armazenamento configurado em `current_app.db`)
-- node 18.17.0
-
-## Instalação
-
-1. Clone o repositório:
-
-   ```bash
-   git clone https://github.com/fams/guess_game.git
-   cd guess-game
-   ```
-
-2. Crie um ambiente virtual e ative-o:
-
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # Linux/Mac
-   venv\Scripts\activate  # Windows
-   ```
-
-3. Instale as dependências:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Configure o banco de dados com as variáveis de ambiente no arquivo start-backend.sh
-    1. Para sqlite
-
-        ```bash
-            export FLASK_APP="run.py"
-            export FLASK_DB_TYPE="sqlite"            # Use SQLITE
-            export FLASK_DB_PATH="caminho/db.sqlite" # caminho do banco
-        ```
-
-    2. Para Postgres
-
-        ```bash
-            export FLASK_APP="run.py"
-            export FLASK_DB_TYPE="postgres"       # Use postgres
-            export FLASK_DB_USER="postgres"       # Usuário do banco
-            export FLASK_DB_NAME="postgres"       # Nome do Banco
-            export FLASK_DB_PASSWORD="secretpass" # Senha do banco
-            export FLASK_DB_HOST="localhost"      # Hostname
-            export FLASK_DB_PORT="5432"           # Porta
-        ```
-
-    3. Para DynamoDB
-
-        ```bash
-        export FLASK_APP="run.py"
-        export FLASK_DB_TYPE="dynamodb"       # Use postgres
-        export AWS_DEFAULT_REGION="us-east-1" # AWS region
-        export AWS_ACCESS_KEY_ID="FAKEACCESSKEY123456" 
-        export AWS_SECRET_ACCESS_KEY="FakeSecretAccessKey987654321"
-        export AWS_SESSION_TOKEN="FakeSessionTokenABCDEFGHIJKLMNOPQRSTUVXYZ1234567890"
-        ```
-
-5. Execute o backend
-
-   ```bash
-   ./start-backend.sh &
-   ```
-
-6. Cuidado! verifique se o seu linux está lendo o arquivo .sh com fim de linha do windows CRLF. Para verificar utilize o vim -b start-backend.sh
-
-## Frontend
-No diretorio de frontend
-
-1. Instale o node com o nvm. Se não tiver o nvm instalado, siga o [tutorial](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)
-
-    ```bash
-    nvm install 18.17.0
-    nvm use 18.17.0
-    # Habilite o yarn
-    corepack enable
-    ```
-
-2. Instale as dependências do node com o npm:
-
-    ```bash
-    npm install
-    ```
-
-3. Exporte a url onde está executando o backend e execute o backend.
-
-   ```bash
-    export REACT_APP_BACKEND_URL=http://localhost:5000
-    yarn start
-   ```
-
-## Como Jogar
-
-### 1. Criar um novo jogo
-
-Acesse a url do frontend http://localhost:3000
-
-Digite uma frase secreta
-
-Envie
-
-Salve o game-id
+seu_projeto/
+├── .env                  # Variáveis de ambiente para o Docker Compose
+├── docker-compose.yml    # Orquestração dos serviços
+├── db/
+│   └──── Dockerfile        # Dockerfile para o PostgreSQL
+├── game/
+│   ├── Dockerfile        # Dockerfile para o backend Flask
+│   ├── requirements.txt  # Dependências Python (ex: Flask, Gunicorn, psycopg2-binary)
+│   └── run.py            # Seu aplicativo Flask (ou app.py, etc.)
+│   └──── frontend/
+│       ├── Dockerfile        # Dockerfile para build do React e Nginx
+│       ├── package.json      # Dependências do React
+│       ├── src/              # Código fonte do React
+│       └── public/           # Arquivos públicos do React
+└── nginx/
+    └──── frontend/
+        └── nginx.conf        # Configuração do Nginx para proxy reverso e servir estáticos
 
 
-### 2. Adivinhar a senha
+## Como Executar (Recomendado: Docker Compose)
 
-Acesse a url do frontend http://localhost:3000
+Esta é a maneira mais fácil de levantar todos os serviços da aplicação.
 
-Vá para o endponint breaker
+### Configuração das Variáveis de Ambiente
 
-entre com o game_id que foi gerado pelo Creator
+Tem um arquivo `.env` na raiz do seu projeto (na mesma pasta do `docker-compose.yml`) com as seguintes variáveis:
 
-Tente adivinhar
-
-## Estrutura do Código
-
-### Rotas:
-
-- **`/create`**: Cria um novo jogo. Armazena a senha codificada em base64 e retorna um `game_id`.
-- **`/guess/<game_id>`**: Permite ao usuário adivinhar a senha. Compara a adivinhação com a senha armazenada e retorna o resultado.
-
-### Classes Importantes:
-
-- **`Guess`**: Classe responsável por gerenciar a lógica de comparação entre a senha e a tentativa do jogador.
-- **`WrongAttempt`**: Exceção personalizada que é levantada quando a tentativa está incorreta.
+Variáveis de ambiente para a aplicação Flask
+FLASK_DB_USER=postgres_user    # Usuário do banco
+FLASK_DB_NAME=postgres_db      # Nome do banco
+FLASK_DB_PASSWORD=postgres123  # Senha de acesso ao banco (recomendavel alterar)
 
 
+### Iniciando os Serviços
 
-## Melhorias Futuras
+No terminal, navegue até a pasta raiz do seu projeto (onde está o `docker-compose.yml`) e execute o seguinte comando:
 
-- Implementar autenticação de usuário para salvar e carregar jogos.
-- Adicionar limite de tentativas.
-- Melhorar a interface de feedback para as tentativas de adivinhação.
+ `docker compose up --build -d`
 
-## Licença
 
-Este projeto está licenciado sob a [MIT License](LICENSE).
+* `--build`: Garante que as imagens dos serviços sejam construídas (ou reconstruídas) antes de iniciar os contêineres.
 
+* `-d`: Inicia os contêineres em modo *detached* (em segundo plano).
+
+Aguarde o Docker baixar as dependências e construir as imagens. Este processo pode levar alguns minutos na primeira vez.
+
+### Acessando a Aplicação
+
+Após todos os serviços estarem em execução, você pode acessar a aplicação frontend através do seu navegador:
+
+[http://localhost:80](http://localhost:80)
+
+
+## Como Executar (Manual: Sem Docker Compose)
+
+Esta seção é para fins de compreensão ou depuração avançada, não sendo a forma recomendada para uso diário.
+
+### Construindo as Imagens
+
+Primeiro, construa as imagens para cada serviço individualmente: (obs: verifique que está dentro da pasta)
+
+1. **Imagem do Banco de Dados PostgreSQL:**
+
+ `docker build -t postgres_db -f database/Dockerfile .`
+
+
+*Isso criará a imagem do banco de dados PostgreSQL.*
+
+2. **Imagem do Backend Flask:**
+
+`docker build -t game_backend -f game/Dockerfile .`
+
+
+*Isso criará a imagem do backend Flask.*
+
+3. **Imagem do Frontend React + Nginx:**
+
+`docker build -t game_frontend_nginx -f game/frontend/Dockerfile .`
+
+
+*Isso criará a imagem do frontend React servida pelo Nginx.*
+
+
+### Executando os Contêineres
+
+Após construir as imagens, você precisa executar os contêineres e conectá-los manualmente:
+
+1. **Executar o Contêiner do Banco de Dados:**
+
+~~~comando docker
+docker run --name postgres_db
+
+-e POSTGRES_DB=postgres_db
+
+-e POSTGRES_USER=postgres_user
+
+-e POSTGRES_PASSWORD=postgres123
+
+-v pgdata:/var/lib/postgresql/data
+
+-d postgres_db
+~~~
+
+2. **Executar o Contêiner do Backend Flask:**
+
+~~~comando docker
+
+docker run --name flask_backend
+
+-e FLASK_APP=run.py
+
+-e FLASK_DB_TYPE=postgres
+
+-e FLASK_DB_USER=postgres_user
+
+-e FLASK_DB_NAME=postgres_db
+
+-e FLASK_DB_PASSWORD=postgres123
+
+-e FLASK_DB_HOST=postgres_db
+
+-e FLASK_DB_PORT=5432
+
+--link postgres_db:db
+
+-p 5000:5000
+
+-d game_backend
+~~~
+
+*O `--link postgres_db:db` é usado para conectar o backend ao banco de dados pelo nome do contêiner.*
+
+3. **Executar o Contêiner do Nginx (Frontend):**
+
+~~~comando docker
+docker run --name nginx_proxy
+
+-p 80:80
+
+-v $(pwd)/nginx/nginx.conf/nginx.conf:/etc/nginx/nginx.conf:ro
+
+--link flask_backend:backend
+
+-d game_frontend_nginx
+
+~~~
+
+*O `--link flask_backend:backend` é usado para conectar o Nginx ao backend pelo nome do contêiner.*
+
+Após iniciar todos os contêineres, acesse a aplicação em: [http://localhost:80](http://localhost:80)
+
+## Estrutura dos Containers
+
+* **`db` (PostgreSQL)**: Contêiner do banco de dados. Os dados são persistidos em um volume Docker nomeado (`pgdata`).
+
+* **`backend` (Flask)**: Contêiner da aplicação Flask. Configurado(s) com variáveis de ambiente para conexão com o banco de dados. Múltiplas instâncias podem ser configuradas para balanceamento de carga.
+
+* **`nginx` (Nginx)**: Contêiner do Nginx que serve os arquivos estáticos do frontend React e atua como proxy reverso para o(s) contêiner(es) do backend.
+
+## Resiliência e Manutenção
+
+* **Reinício de Containers:** Todos os serviços no `docker-compose.yml` estão configurados com `restart: unless-stopped` ou `restart_policy: on_failure`, garantindo que eles sejam reiniciados automaticamente em caso de falha.
+
+* **Balanceamento de Carga no Proxy Reverso:** O serviço `backend` no `docker-compose.yml` está configurado com `deploy: replicas: 2` (ou mais), e o `nginx.conf` usa `proxy_pass http://backend:5000;`. O Docker Compose, em conjunto com o Nginx, gerencia automaticamente o balanceamento de carga entre as instâncias do backend.
+
+* **Volumes Separados para o Banco de Dados:** O volume nomeado `pgdata` garante que os dados do PostgreSQL não sejam perdidos se o contêiner do banco de dados for removido ou atualizado.
+
+* **Facilidade de Atualização:** Para atualizar qualquer componente, basta alterar a tag da imagem no `Dockerfile` correspondente (se estiver usando uma imagem base específica) ou no `docker-compose.yml` (se estiver usando uma imagem pré-construída) e, em seguida, executar `docker compose up --build -d` novamente.
+
+## Solução de Problemas Comuns
+
+* **Contêineres não iniciam:**
+
+* Verifique os logs dos contêineres: `docker compose logs <nome_do_servico>` (ex: `docker compose logs backend`).
+
+* Certifique-se de que as portas não estão em uso por outros aplicativos na sua máquina.
+
+* **Erro de conexão com o banco de dados:**
+
+* Verifique se as variáveis de ambiente de conexão no `.env` e no `game/Dockerfile` estão corretas e correspondem às do serviço `db`.
+
+* Confirme se o serviço `db` está rodando: `docker ps`.
+
+* Verifique se o `FLASK_DB_HOST` no backend está apontando para `db` (o nome do serviço do banco de dados no `docker-compose.yml`).
+
+* **Frontend não carrega ou API não responde:**
+
+* Verifique os logs do Nginx: `docker compose logs nginx`.
+
+* Confirme se o `nginx/nginx.conf` está montado corretamente e se as configurações de `proxy_pass` e `root` estão corretas.
+
+* Verifique se o backend está rodando e acessível: `docker logs backend`.
+
+* **Problemas de cache:** Se você fez alterações no código e elas não aparecem, tente reconstruir as imagens sem cache: `docker compose build --no-cache`.
