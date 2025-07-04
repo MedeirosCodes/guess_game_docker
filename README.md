@@ -220,5 +220,7 @@ Após iniciar todos os contêineres, acesse a aplicação em: [http://localhost:
 
 * **Problemas de cache:** Se você fez alterações no código e elas não aparecem, tente reconstruir as imagens sem cache: `docker compose build --no-cache`.
 
-[Game funcionando localhost:80.png](https://postimg.cc/yWrD3R15)
-[Game funcionando2 localhost:80.png.png](https://postimg.cc/8JZjHJh7)
+* **Imagens do Game Guess funcionando:**
+[Game.png](https://postimg.cc/yWrD3R15)
+
+[Game2.png](https://postimg.cc/8JZjHJh7)
