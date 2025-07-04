@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  db:
+    build: ./db
+    container_name: postgres_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${FLASK_DB_NAME}
+      POSTGRES_USER: ${FLASK_DB_USER}
+      POSTGRES_PASSWORD: ${FLASK_DB_PASSWORD}
+    restart: unless-stopped
+
+  backend:
+    build: ./game
+    container_name: flask_backend
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: ./game/frontend
+      dockerfile: Dockerfile
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  pgdata:
