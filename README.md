@@ -24,6 +24,7 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
 ## Estrutura do Projeto
 
+~~~Projeto
 seu_projeto/
 ├── .env                  # Variáveis de ambiente para o Docker Compose
 ├── docker-compose.yml    # Orquestração dos serviços
@@ -41,7 +42,7 @@ seu_projeto/
 └── nginx/
     └──── frontend/
         └── nginx.conf        # Configuração do Nginx para proxy reverso e servir estáticos
-
+~~~
 
 ## Como Executar (Recomendado: Docker Compose)
 
