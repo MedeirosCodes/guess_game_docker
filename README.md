@@ -10,7 +10,9 @@ Agora vamos criar a imagem do game
 
 docker build -t game -f guess_game_docker/game/Dockerfile .
 
+Agora vamos criar a imagem do front-end
 
+docker build -t nginx -f guess_game_docker/front/Dockerfile .
 
 
 
