@@ -6,6 +6,12 @@ docker build -t postgres_db -f guess_game_docker/db/Dockerfile .
 
 Nessa etapa está criando a imagem do banco de dados Postgress usando a versão alpine 17
 
+Agora vamos criar a imagem do game
+
+docker build -t game -f guess_game_docker/game/Dockerfile .
+
+
+
 
 
 ---
